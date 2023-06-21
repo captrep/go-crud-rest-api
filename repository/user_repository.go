@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"log"
-	"strings"
 
 	"github.com/captrep/go-crud-rest-api/model/domain"
 )
@@ -19,11 +18,11 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 }
 
 const (
-	queryInsertUser = "INSERT INTO users (id, first_name, last_name, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	queryInsertUser = "INSERT INTO users (id, first_name, last_name, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 	queryFindAll    = "SELECT * FROM users"
-	queryGetById    = "SELECT id, first_name, last_name, email, created_at, updated_at FROM users WHERE id=?"
-	queryUpdate     = "UPDATE users SET first_name = ?, last_name = ?, email = ?, updated_at = ? WHERE id=?"
-	queryDelete     = "DELETE FROM users WHERE id=?"
+	queryGetById    = "SELECT id, first_name, last_name, email, created_at, updated_at FROM users WHERE id=$1"
+	queryUpdate     = "UPDATE users SET first_name = $1, last_name = $2, email = $3, updated_at = $4 WHERE id=$5"
+	queryDelete     = "DELETE FROM users WHERE id=$1"
 	errorNoRows     = "no rows in result set"
 )
 
@@ -80,9 +79,6 @@ func (repository *UserRepository) FindById(userId string) (domain.User, error) {
 
 	result := statement.QueryRow(userId)
 	if err := result.Scan(&user.Id, &user.Firstname, &user.Lastname, &user.Email, &user.CreatedAt, &user.UpdatedAt); err != nil {
-		if strings.Contains(err.Error(), errorNoRows) {
-			return user, err
-		}
 		return user, err
 	}
 

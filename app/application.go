@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/captrep/go-crud-rest-api/controller"
-	"github.com/captrep/go-crud-rest-api/datasource/mysql"
+	"github.com/captrep/go-crud-rest-api/datasource/psql"
 	"github.com/captrep/go-crud-rest-api/repository"
 	"github.com/captrep/go-crud-rest-api/service"
 	"github.com/go-chi/chi/v5"
@@ -16,7 +16,7 @@ import (
 var r = chi.NewRouter()
 
 func StartApplication() {
-	db := mysql.NewDB()
+	db := psql.NewDB()
 	validate := validator.New()
 	userRepo := repository.NewUserRepository(db)
 	userSvc := service.NewUserService(userRepo, validate)

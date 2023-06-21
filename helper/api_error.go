@@ -6,11 +6,11 @@ import (
 	"github.com/captrep/go-crud-rest-api/model/web"
 )
 
-func ValidationError(w http.ResponseWriter, err error) {
+func ValidationError(w http.ResponseWriter, data interface{}) {
 	WriteJSON(w, http.StatusBadRequest, &web.ErrorResponse{
 		Code:   http.StatusBadRequest,
 		Status: "Bad Request",
-		Error:  "Not Meet Requirement",
+		Error:  data,
 	})
 }
 

@@ -127,6 +127,6 @@ func (svc *UserService) Delete(userID string) (*web.WebResponse, error) {
 	return &web.WebResponse{
 		Code:   200,
 		Status: "OK",
-		Data:   curr.Id,
+		Data:   "Success Deleted User",
 	}, nil
 }

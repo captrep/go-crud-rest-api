@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"strings"
@@ -31,13 +32,19 @@ func (ctrl *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	userResponse, err := ctrl.svc.CreateUser(&createUserRequest)
 	if err != nil {
-		if _, ok := err.(validator.ValidationErrors); ok {
-			helper.ValidationError(w, err.(validator.ValidationErrors))
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			data := make(map[string]interface{})
+			for _, fe := range ve {
+				data[fe.Field()] = fe.Tag()
+
+			}
+			helper.ValidationError(w, data)
 		} else {
 			helper.InternalServerError(w, err.Error())
 		}
-
-		panic(err)
+		log.Println(err)
+		return
 	}
 	webResponse := &web.WebResponse{
 		Code:   http.StatusCreated,
@@ -116,7 +123,6 @@ func (ctrl *UserController) Delete(w http.ResponseWriter, r *http.Request) {
 	userId := chi.URLParam(r, "id")
 	res, err := ctrl.svc.Delete(userId)
 	if err != nil {
-		log.Println(err.Error())
 		log.Println(err.Error())
 		if strings.Contains(err.Error(), "no rows in result set") {
 			helper.NotFoundError(w, err.Error())
